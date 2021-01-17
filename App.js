@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, Component, useEffect } from 'react';
+import axios from "axios";
 import { StyleSheet, Text, View, SafeAreaView, FlatList, Button, TouchableOpacity, SectionList } from 'react-native';
 
 const getIntialArray = () => {
@@ -24,18 +25,16 @@ const ListComponent = () => {
     console.log("Something happened")
     
     if (candidateList.length === 0) {
-      console.log('Length was 0 and get feed was called');
-      fetch('https://jsonplaceholder.typicode.com/users')
-      .then((response) => response.json())
-      .then((json) => {
-        let results = []; 
-        json.forEach((item) => {
+      axios.get('https://jsonplaceholder.typicode.com/users')
+      .then(function (response) {
+        let results = [];
+        response.data.forEach((item) => {
           let result = { name: item.name, id: item.id};
           results.push(result);
         });
         setCandidateList(results)
         setSelectedId(1)
-      });
+      })
     }
   }, [candidateList]);
 
@@ -98,12 +97,11 @@ const useCurrentCandidate = (selectedId) => {
     //No need for an if statement since useEffect won't run if the value stays the same
     console.log("Fetching candidate")
     //SelectedIf returns an objecy with "selectedId" in it. That's why this looks so dumb.
-        fetch(`https://jsonplaceholder.typicode.com/users/${selectedId.selectedId}`)
-        .then((response) => response.json())
-        .then((json) => {
-            setName(json.name)
-            setEmail(json.email)
-            setPhone(json.phone)
+        axios.get(`https://jsonplaceholder.typicode.com/users/${selectedId.selectedId}`)
+        .then((response) => {
+            setName(response.data.name)
+            setEmail(response.data.email)
+            setPhone(response.data.phone)
         });
   }, [selectedId]);
   return [name, phone, email];
