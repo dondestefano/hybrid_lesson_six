@@ -9,7 +9,11 @@ const getIntialArray = () => {
 
 const getInitialValue = () => {
   console.log('get initial value was called lazy way');
-  return 0
+  return 1
+}
+
+const getInitialString = () => {
+  return ""
 }
 
 const ListComponent = () => {
@@ -60,7 +64,8 @@ const ListComponent = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container}
+    >
     <FlatList style= {{height: "80%"}}
       data={candidateList}
       renderItem={({ item }) =>
@@ -72,61 +77,50 @@ const ListComponent = () => {
       }
       keyExtractor={(item) => item.name.toString()}
     />
+
+    <InfoComponent selectedId={selectedId}/>
+
     <View style={{flexDirection: "row", alignContent: "center", margin: 12}}>
-      <Button title="Prev" onPress={() => {
-        handlePrevious();
-        }} />
+      <Button title="Prev" onPress={() => {handlePrevious();}} />
       <Text>{" "+ selectedId + " "}</Text>
-      <Button title="Next" onPress={() => {
-        handleNext(); 
-        }} />
+      <Button title="Next" onPress={() => {handleNext();}} />
     </View>
   </SafeAreaView>     
   )
 }
 
-class InfoComponent extends Component {
-  state = {
-    userId: 0,
-    userName: "",
-    userPhone: "",
-    userEmail: ""
-  };
+const useCurrentCandidate = (selectedId) => {
+  const [name, setName] = useState(() => getInitialString())
+  const [email, setEmail] = useState(() => getInitialString())
+  const [phone, setPhone] = useState(() => getInitialString())
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return nextProps.userId !== this.state.userId;
-  }
-
-  componentDidUpdate(props, state) {
-    if (this.state.userId !== props.userId) {}
-    this.setState({userId: props.userId})
-    this.fetchCandidate();
-  }
-
-  fetchCandidate() {
+  useEffect(() => {
+    //No need for an if statement since useEffect won't run if the value stays the same
     console.log("Fetching candidate")
-    fetch(`https://jsonplaceholder.typicode.com/users/${this.state.userId}`)
-    .then((response) => response.json())
-    .then((json) => {
-      this.setState ({ 
-        userName: json.name,
-        userEmail: json.email,
-        userPhone: json.phone,
-        userId: json.id
-       })
-    });
-  }
+    //SelectedIf returns an objecy with "selectedId" in it. That's why this looks so dumb.
+        fetch(`https://jsonplaceholder.typicode.com/users/${selectedId.selectedId}`)
+        .then((response) => response.json())
+        .then((json) => {
+            setName(json.name)
+            setEmail(json.email)
+            setPhone(json.phone)
+        });
+  }, [selectedId]);
+  return [name, phone, email];
+};
 
-  render() {
-    return(
-      <View style={{backgroundColor: "grey", margin: 12, width: "80%", height: "16%", justifyContent: "center", alignItems: 'center'}}>
-        <Text style={{fontSize: 18}}>{"Name: " + this.state.userName}</Text>
-        <Text style={{fontSize: 18}}>{"E-mail: " + this.state.userEmail}</Text>
-        <Text style={{fontSize: 18}}>{"Phone: " +this.state.userPhone}</Text>
-      </View>
-    )
-  }
+const InfoComponent = (userId) => {
+  const [name, phone, email] = useCurrentCandidate(userId)
+
+  return(
+    <View style={{backgroundColor: "grey", margin: 12, width: 350, height: 100, justifyContent: "center", alignItems: 'center'}}>
+      <Text style={{fontSize: 18}}>{"Name: " + name}</Text>
+      <Text style={{fontSize: 18}}>{"E-mail: " + email}</Text>
+      <Text style={{fontSize: 18}}>{"Phone: " + phone}</Text>
+    </View>
+  )
 }
+
 
 export default function App() {
   return (
