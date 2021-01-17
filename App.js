@@ -63,8 +63,7 @@ const ListComponent = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}
-    >
+    <SafeAreaView style={styles.container}>
     <FlatList style= {{height: "80%"}}
       data={candidateList}
       renderItem={({ item }) =>
@@ -111,7 +110,8 @@ const InfoComponent = (userId) => {
   const [name, phone, email] = useCurrentCandidate(userId)
 
   return(
-    <View style={{backgroundColor: "grey", margin: 12, width: 350, height: 100, justifyContent: "center", alignItems: 'center'}}>
+    <View style={{backgroundColor: "grey", margin: 12, padding: 20, width: 350, height: "30%", justifyContent: "center"}}>
+      <Text style={{fontSize: 20, fontWeight: "bold", marginBottom:12}}>Candidate info</Text>
       <Text style={{fontSize: 18}}>{"Name: " + name}</Text>
       <Text style={{fontSize: 18}}>{"E-mail: " + email}</Text>
       <Text style={{fontSize: 18}}>{"Phone: " + phone}</Text>
